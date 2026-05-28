@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Multi Viewer | Raw Engine (No Referrer)</title>
+    <title>YouTube Multi Viewer Pro</title>
+    <script src="https://www.youtube.com/iframe_api"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -16,7 +17,7 @@
         }
 
         .form-wrap {
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto 40px;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
@@ -31,33 +32,33 @@
             color: #f1f5f9;
         }
 
-        .input-group {
+        .input-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
-            align-items: center;
+            gap: 10px;
+            align-items: stretch;
         }
 
-        .input-group input[type="text"] { flex: 3; min-width: 200px; }
-        .input-group input[type="number"] { width: 80px; flex: 0.5; }
-        .input-group select { flex: 1.5; min-width: 130px; }
+        .input-row input[type="text"] { flex: 1 1 260px; min-width: 0; }
+        .input-row input[type="number"] { width: 80px; flex: 0 0 80px; }
+        .input-row select { flex: 1 1 140px; min-width: 0; }
 
         input, select {
-            padding: 12px 15px;
+            padding: 11px 14px;
             border: 1px solid rgba(255,255,255,0.15);
             border-radius: 10px;
             font-size: 15px;
             background: rgba(255,255,255,0.07);
             color: #fff;
             outline: none;
-            transition: 0.3s;
+            transition: border-color 0.2s;
         }
 
         input:focus, select:focus { border-color: #38bdf8; }
         select option { background: #1e293b; color: #fff; }
 
         button {
-            padding: 12px 25px;
+            padding: 11px 26px;
             background: #ef4444;
             color: #fff;
             border: none;
@@ -65,12 +66,19 @@
             font-size: 15px;
             font-weight: 700;
             cursor: pointer;
-            transition: 0.3s;
-            flex: 1;
-            white-space: nowrap;
+            transition: background 0.2s, transform 0.15s;
+            flex: 0 0 auto;
         }
 
-        button:hover { background: #dc2626; transform: translateY(-2px); }
+        button:hover { background: #dc2626; transform: translateY(-1px); }
+
+        #status-msg {
+            text-align: center;
+            color: #fbbf24;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: none;
+        }
 
         #players {
             max-width: 1400px;
@@ -81,102 +89,135 @@
         }
 
         .player-slot {
+            position: relative;
             width: 100%;
             aspect-ratio: 16/9;
             border-radius: 12px;
             overflow: hidden;
             background: #000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             opacity: 0;
             animation: fadeIn 0.5s forwards;
         }
 
         @keyframes fadeIn { to { opacity: 1; } }
 
-        iframe {
-            width: 100%;
-            height: 100%;
+        .player-slot > div, .player-slot iframe {
+            position: absolute !important;
+            top: 0; left: 0;
+            width: 100% !important;
+            height: 100% !important;
             border: none;
         }
 
         @media (max-width: 1100px) { #players { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 700px) { 
-            #players { grid-template-columns: repeat(2, 1fr); } 
-            .input-group { flex-direction: column; align-items: stretch; }
-            .input-group input, .input-group select, .input-group button { width: 100%; }
-        }
+        @media (max-width: 700px) { #players { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 440px) { #players { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
 <div class="form-wrap">
-    <h1>YouTube Multi Viewer (Raw Iframe Engine)</h1>
-    <div class="input-group">
+    <h1>YouTube Multi Viewer</h1>
+    <div class="input-row">
         <input type="text" id="videoUrl" placeholder="Incolla URL YouTube...">
-        <input type="number" id="viewCount" value="4" min="1" max="30" title="Numero di Player">
-        
+        <input type="number" id="viewCount" value="4" min="1" max="30">
         <select id="audioSetting">
             <option value="1">Muto</option>
-            <option value="0" selected>Audio Attivo (Per Ads)</option>
+            <option value="0" selected>Audio attivo (Consigliato per Ads)</option>
         </select>
-        
-        <select id="autoplaySetting">
-            <option value="0">Autoplay OFF (Manuale)</option>
-            <option value="1">Autoplay ON</option>
+        <select id="qualitySetting">
+            <option value="default">Auto</option>
+            <option value="small">240p</option>
+            <option value="medium">360p</option>
+            <option value="hd720">720p</option>
         </select>
-
-        <button onclick="startMultiView()">Genera Player</button>
+        <button id="generateBtn" onclick="startMultiView()">Genera Player</button>
     </div>
 </div>
 
+<div id="status-msg">Generazione player in corso. Attendi...</div>
 <div id="players"></div>
 
 <script>
-    function getID(url) {
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
+    function getVideoId(url) {
+        const r = /(?:youtu\.be\/|v=|\/v\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/;
+        const m = url.match(r);
+        return m ? m[1] : null;
     }
 
+    const players = {};
+
     function startMultiView() {
-        const url = document.getElementById('videoUrl').value.trim();
-        const count = Math.min(parseInt(document.getElementById('viewCount').value) || 1, 30);
-        const isMuted = document.getElementById('audioSetting').value;
-        const isAutoplay = document.getElementById('autoplaySetting').value;
-        const videoId = getID(url);
+        const url      = document.getElementById('videoUrl').value.trim();
+        const count    = Math.min(parseInt(document.getElementById('viewCount').value) || 1, 30);
+        const isMuted  = document.getElementById('audioSetting').value === '1';
+        const quality  = document.getElementById('qualitySetting').value;
+        const videoId  = getVideoId(url);
 
-        if (!videoId) { alert("Inserisci un URL YouTube valido."); return; }
+        if (!videoId) { alert('URL YouTube non valido.'); return; }
 
-        const playerContainer = document.getElementById('players');
-        playerContainer.innerHTML = '';
-        playerContainer.style.display = 'grid';
+        document.getElementById('generateBtn').disabled = true;
+        document.getElementById('status-msg').style.display = 'block';
 
+        const container = document.getElementById('players');
+        container.innerHTML = '';
+        container.style.display = 'grid';
+
+        // Pulizia dei player precedenti
+        Object.keys(players).forEach(k => {
+            try { players[k].destroy(); } catch(e) {}
+            delete players[k];
+        });
+
+        let loadedCount = 0;
+
+        // Creazione sequenziale con ritardo di 1.5 secondi
         for (let i = 0; i < count; i++) {
-            // Manteniamo il ritardo di 1.5 secondi per non farsi bloccare subito l'IP
             setTimeout(() => {
                 const slot = document.createElement('div');
                 slot.className = 'player-slot';
+                slot.id = 'slot-' + i;
 
-                // Random Start (sfasa l'inizio dei video da 0 a 14 secondi)
-                const randomStart = Math.floor(Math.random() * 15);
+                const target = document.createElement('div');
+                target.id = 'ytplayer-' + i;
+                slot.appendChild(target);
+                container.appendChild(slot);
 
-                // Creazione dell'Iframe "Grezzo"
-                const iframe = document.createElement('iframe');
-                iframe.width = "100%";
-                iframe.height = "100%";
-                
-                // Costruzione URL pulita: rimosso il widget_referrer
-                iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=${isAutoplay}&mute=${isMuted}&start=${randomStart}&rel=0&modestbranding=1`;
-                
-                // Regole di sicurezza del browser
-                iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-                iframe.setAttribute('allowfullscreen', 'true');
+                // Inizializzazione API YouTube (garantisce il conteggio visualizzazioni)
+                players[i] = new YT.Player('ytplayer-' + i, {
+                    videoId: videoId,
+                    playerVars: {
+                        autoplay: 0, // Obbliga il click umano
+                        mute: isMuted ? 1 : 0,
+                        controls: 1,
+                        rel: 0,
+                        modestbranding: 1,
+                        playsinline: 1,
+                        origin: location.origin || 'https://pooreyoutuber.github.io',
+                        enablejsapi: 1
+                    },
+                    events: {
+                        onReady: (e) => {
+                            e.target.setPlaybackQuality(quality);
+                            // Variazione minima della velocità per sembrare sessioni diverse
+                            const rates = [0.75, 1, 1, 1, 1.25];
+                            e.target.setPlaybackRate(rates[i % rates.length]);
+                        },
+                        onStateChange: (e) => {
+                            if (e.data === YT.PlayerState.PLAYING) {
+                                e.target.setPlaybackQuality(quality);
+                            }
+                        }
+                    }
+                });
 
-                slot.appendChild(iframe);
-                playerContainer.appendChild(slot);
-
-            }, i * 1500); // Ritardo progressivo
+                loadedCount++;
+                if (loadedCount === count) {
+                    document.getElementById('status-msg').style.display = 'none';
+                    document.getElementById('generateBtn').disabled = false;
+                }
+            }, i * 1500); // Ritardo di 1.5s moltiplicato per l'indice
         }
     }
 </script>
