@@ -1,299 +1,295 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Il Mio Generatore YouTube</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>YouTube Multi Viewer</title>
     <script src="https://www.youtube.com/iframe_api"></script>
-    
     <style>
-        :root {
-            --primary: #FF3D3D;
-            --primary-dark: #cc0000;
-            --accent: #38bdf8;
-            --bg: #0f172a;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --text: #ffffff;
-            --text-light: #cbd5e1;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            line-height: 1.6;
+            font-family: system-ui, sans-serif;
+            background: #0f172a;
+            color: #fff;
+            min-height: 100vh;
+            padding: 30px 20px;
         }
 
-        .header {
-            background: var(--card-bg);
-            padding: 15px 5%;
+        .form-wrap {
+            max-width: 900px;
+            margin: 0 auto 40px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 28px 24px;
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #f1f5f9;
+        }
+
+        .input-row {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        .logo { font-size: 24px; font-weight: 800; color: var(--primary); text-decoration: none; }
-
-        .hero-section {
-            padding: 40px 20px;
-            max-width: 1400px;
-            margin: auto;
-            text-align: center;
-        }
-
-        .main-card {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            margin-bottom: 40px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-wrap: nowrap; 
+            flex-wrap: wrap;
             gap: 10px;
-            margin-top: 25px;
-            align-items: center;
+            align-items: stretch;
         }
 
-        #videoUrl { flex: 3; } 
-        #viewCount { width: 80px; flex: 0.5; } 
-        #audioSetting, #qualitySetting { flex: 1; }
-        .btn-play { flex: 1; white-space: nowrap; }
-        
+        .input-row input[type="text"] {
+            flex: 1 1 260px;
+            min-width: 0;
+        }
+
+        .input-row input[type="number"] {
+            width: 80px;
+            flex: 0 0 80px;
+        }
+
+        .input-row select {
+            flex: 1 1 140px;
+            min-width: 0;
+        }
+
         input, select {
-            padding: 12px 15px;
-            border: 2px solid #e2e8f0;
+            padding: 11px 14px;
+            border: 1px solid rgba(255,255,255,0.15);
             border-radius: 10px;
-            font-size: 16px;
+            font-size: 15px;
+            background: rgba(255,255,255,0.07);
+            color: #fff;
             outline: none;
-            transition: 0.3s;
-            background: #ffffff;
-            color: #000000;
+            transition: border-color 0.2s;
         }
 
-        .btn-play {
-            background: var(--primary);
-            color: white;
+        input::placeholder { color: #64748b; }
+        input:focus, select:focus { border-color: #38bdf8; }
+
+        select option { background: #1e293b; color: #fff; }
+
+        button {
+            padding: 11px 26px;
+            background: #ef4444;
+            color: #fff;
             border: none;
-            padding: 12px 25px;
             border-radius: 10px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
-            transition: 0.3s;
+            transition: background 0.2s, transform 0.15s;
+            flex: 0 0 auto;
         }
 
-        .btn-play:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        button:hover { background: #dc2626; transform: translateY(-1px); }
 
         #players {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 25px;
-            margin-top: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
             display: none;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
         }
-        
-        .player-wrapper {
-            background: #000;
+
+        .player-slot {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-            position: relative;
+            background: #000;
+            cursor: pointer;
         }
-        
-        .player-iframe {
-            width: 100%;
-            height: 100%;
+
+        /* L'iframe occupa tutto lo slot */
+        .player-slot > div,
+        .player-slot iframe {
+            position: absolute !important;
+            top: 0; left: 0;
+            width: 100% !important;
+            height: 100% !important;
             border: none;
-            display: block;
         }
 
-        @media (max-width: 1024px) {
-            #players {
-                grid-template-columns: repeat(2, 1fr) !important; 
-                gap: 20px;
-                padding: 15px;
-            }
-            .input-group {
-                display: flex;
-                flex-direction: column;
-                gap: 12px;
-            }
-            input#videoUrl, input#viewCount, select, .btn-play {
-                width: 100% !important;
-                box-sizing: border-box;
-                font-size: 14px; 
-            }
+        /* Overlay trasparente: cattura il click e lo passa al player */
+        .play-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.35);
+            transition: opacity 0.3s;
         }
 
-        @media (max-width: 400px) {
+        .play-overlay svg {
+            width: 54px;
+            height: 54px;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.7));
+        }
+
+        .play-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @media (max-width: 1100px) {
+            #players { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 700px) {
+            #players { grid-template-columns: repeat(2, 1fr); }
+            .input-row input[type="number"] { width: 70px; flex: 0 0 70px; }
+        }
+        @media (max-width: 440px) {
             #players { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<header class="header">
-    <div class="logo">🚀 Multi Viewer Privato</div>
-</header>
-
-<div class="hero-section">
-    <div class="main-card">
-        <h1 style="margin-top: 0;">Youtube Multi Browser</h1>
-        <p style="color: var(--text-light);">Incolla un URL di YouTube e scegli quanti player generare.</p>
-
-        <div class="input-group">
-            <input type="text" id="videoUrl" placeholder="Incolla l'URL del video YouTube qui...">
-            <input type="number" id="viewCount" value="4" min="1" max="50" placeholder="Quantità">
-            <select id="audioSetting">
-                <option value="1">Muto (Più Veloce)</option>
-                <option value="0">Audio Attivo</option>
-            </select>
-            <select id="qualitySetting">
-                <option value="default">Qualità Auto</option>
-                <option value="small">240p</option>
-                <option value="medium">360p</option>
-                <option value="large">480p</option>
-                <option value="hd720">720p HD</option>
-                <option value="hd1080">1080p Full HD</option>
-            </select>
-            <button class="btn-play" onclick="startMultiView()">Genera Player</button>
-        </div>
+<div class="form-wrap">
+    <h1>YouTube Multi Viewer</h1>
+    <div class="input-row">
+        <input type="text" id="videoUrl" placeholder="Incolla URL YouTube...">
+        <input type="number" id="viewCount" value="4" min="1" max="30">
+        <select id="audioSetting">
+            <option value="1">Muto</option>
+            <option value="0">Audio attivo</option>
+        </select>
+        <select id="qualitySetting">
+            <option value="default">Auto</option>
+            <option value="small">240p</option>
+            <option value="medium">360p</option>
+            <option value="large">480p</option>
+            <option value="hd720">720p</option>
+            <option value="hd1080">1080p</option>
+        </select>
+        <button onclick="startMultiView()">Genera Player</button>
     </div>
-
-    <div id="players"></div>
 </div>
 
+<div id="players"></div>
+
 <script>
-    function getID(url) {
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
+    /* ── Estrae l'ID dal URL YouTube (long, short, shorts) ── */
+    function getVideoId(url) {
+        const r = /(?:youtu\.be\/|v=|\/v\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/;
+        const m = url.match(r);
+        return m ? m[1] : null;
+    }
+
+    /* ── Pool di oggetti YT.Player indicizzati ── */
+    const players = {};
+
+    /* ── Avvia un player tramite click sull'overlay ──
+       Questo è il punto critico: YouTube conta la view e mostra
+       la pubblicità SOLO se il .playVideo() è scatenato
+       da un gesto utente reale sul DOM (click).               */
+    function activatePlayer(index) {
+        const overlay = document.getElementById('overlay-' + index);
+        overlay.classList.add('hidden');
+
+        const p = players[index];
+        if (!p) return;
+
+        const isMuted = document.getElementById('audioSetting').value === '1';
+        const quality  = document.getElementById('qualitySetting').value;
+
+        p.setPlaybackQuality(quality);
+        if (isMuted) { p.mute(); } else { p.unMute(); p.setVolume(100); }
+
+        /* playVideo() dentro un handler click = user gesture autentico */
+        p.playVideo();
     }
 
     function startMultiView() {
-        const url = document.getElementById('videoUrl').value;
-        const count = document.getElementById('viewCount').value;
-        const isMuted = document.getElementById('audioSetting').value === "1";
-        const selectedQuality = document.getElementById('qualitySetting').value;
-        const videoId = getID(url);
-        const playerContainer = document.getElementById('players');
-        
-        // CORREZIONE: Usa il dominio reale del tuo sito. 
-        // Fingere di essere YouTube fa scattare i filtri anti-frode e disabilita le pubblicità.
-        const realOrigin = window.location.origin;
+        const url      = document.getElementById('videoUrl').value.trim();
+        const count    = Math.min(parseInt(document.getElementById('viewCount').value) || 1, 30);
+        const isMuted  = document.getElementById('audioSetting').value === '1';
+        const quality  = document.getElementById('qualitySetting').value;
+        const videoId  = getVideoId(url);
 
-        if (!videoId) {
-            alert("Per favore inserisci un URL YouTube valido");
-            return;
-        }
+        if (!videoId) { alert('URL YouTube non valido.'); return; }
 
-        playerContainer.innerHTML = '';
-        playerContainer.style.display = 'grid';
+        const container = document.getElementById('players');
+        container.innerHTML = '';
+        container.style.display = 'grid';
+
+        /* Pulisce i player precedenti */
+        Object.keys(players).forEach(k => {
+            try { players[k].destroy(); } catch(e) {}
+            delete players[k];
+        });
 
         for (let i = 0; i < count; i++) {
-            // Le dimensioni restano invariate (i player troppo piccoli non mostrano ads)
-            const baseWidth = 400 + Math.floor(Math.random() * 400); 
-            const height = Math.floor(baseWidth * 9/16); 
-            
-            const playerWrapper = document.createElement('div');
-            playerWrapper.className = 'player-wrapper';
-            playerWrapper.style.width = baseWidth + 'px';
-            playerWrapper.style.height = height + 'px';
-            playerWrapper.style.minWidth = '400px';
-            playerWrapper.style.minHeight = '225px';
-            
-            const playerDiv = document.createElement('div');
-            playerDiv.id = 'player-' + i;
-            playerDiv.className = 'player-iframe';
-            playerWrapper.appendChild(playerDiv);
-            playerContainer.appendChild(playerWrapper);
+            /* Slot esterno */
+            const slot = document.createElement('div');
+            slot.className = 'player-slot';
+            slot.id = 'slot-' + i;
 
-            const randomStart = Math.floor(Math.random() * 20);
+            /* Div target per YT.Player */
+            const target = document.createElement('div');
+            target.id = 'ytplayer-' + i;
+            slot.appendChild(target);
 
-            // PARAMETRI CORRETTI PER CONSENTIRE LE ADS
-            new YT.Player(playerDiv, {
-                height: '100%',
-                width: '100%',
+            /* Overlay con icona play */
+            const overlay = document.createElement('div');
+            overlay.className = 'play-overlay';
+            overlay.id = 'overlay-' + i;
+            overlay.innerHTML = `
+                <svg viewBox="0 0 68 68" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="34" cy="34" r="34" fill="rgba(0,0,0,0.6)"/>
+                  <polygon points="26,20 54,34 26,48" fill="#fff"/>
+                </svg>`;
+            /* Il click sull'overlay è il gesto utente che sblocca ads + view */
+            overlay.addEventListener('click', (function(idx){ return function(){ activatePlayer(idx); }; })(i));
+            slot.appendChild(overlay);
+
+            container.appendChild(slot);
+
+            /* Crea il player senza autoplay:
+               - autoplay:0 → non parte da solo (nessun bot signal)
+               - Il play avviene solo via click → YouTube lo tratta come
+                 visualizzazione organica e abilita gli annunci              */
+            players[i] = new YT.Player('ytplayer-' + i, {
                 videoId: videoId,
                 playerVars: {
-                    'autoplay': 0, // L'autoplay è avviato sotto tramite script
-                    'mute': isMuted ? 1 : 0,
-                    'vq': selectedQuality,
-                    'rel': 1, 
-                    'controls': 1,
-                    'modestbranding': 0, 
-                    'start': randomStart,
-                    'origin': realOrigin, // Origine reale
-                    'widget_referrer': window.location.href, // Referrer reale
-                    'enablejsapi': 1, 
-                    'iv_load_policy': 1, // 1 mostra annotazioni/ads (3 le nascondeva)
-                    'playsinline': 1, 
-                    'fs': 1, 
-                    'autohide': 1, 
-                    'showinfo': 0,
-                    'cc_load_policy': 0
+                    autoplay:        0,
+                    mute:            isMuted ? 1 : 0,
+                    controls:        1,
+                    rel:             0,
+                    modestbranding:  1,
+                    playsinline:     1,
+                    /* origin deve corrispondere al dominio reale della pagina */
+                    origin:          location.origin || 'https://pooreyoutuber.github.io',
+                    enablejsapi:     1
                 },
                 events: {
-                    'onReady': function(event) {
-                        event.target.setPlaybackQuality(selectedQuality);
-                        
-                        if (!isMuted) {
-                            event.target.unMute();
-                            event.target.setVolume(70 + Math.floor(Math.random() * 30));
-                        }
-                        
-                        setTimeout(() => {
-                            if (event.target.getPlayerState() !== YT.PlayerState.PLAYING) {
-                                event.target.playVideo();
+                    onReady: (function(idx, q, m) {
+                        return function(e) {
+                            e.target.setPlaybackQuality(q);
+                            /* Imposta una velocità leggermente variabile per ogni slot */
+                            const rates = [0.75, 1, 1, 1, 1.25];
+                            e.target.setPlaybackRate(rates[idx % rates.length]);
+                            if (m) { e.target.mute(); }
+                        };
+                    })(i, quality, isMuted),
+
+                    onStateChange: (function(idx, q) {
+                        return function(e) {
+                            /* Mantieni la qualità selezionata durante la riproduzione */
+                            if (e.data === YT.PlayerState.PLAYING) {
+                                e.target.setPlaybackQuality(q);
                             }
-                        }, 1000 + Math.random() * 2000);
-                    },
-                    'onStateChange': function(event) {
-                        if (event.data == YT.PlayerState.PLAYING) {
-                            event.target.setPlaybackQuality(selectedQuality);
-                        }
-                        if (event.data == YT.PlayerState.ENDED) {
-                            setTimeout(() => {
-                                event.target.seekTo(Math.floor(Math.random() * 10));
-                                event.target.playVideo();
-                            }, 3000 + Math.random() * 5000);
-                        }
-                    },
-                    'onError': function(error) {
-                        console.log('Player error:', error);
-                    }
+                        };
+                    })(i, quality)
                 }
             });
-
-            setTimeout(() => {
-                const iframe = playerDiv.querySelector('iframe');
-                if (iframe) {
-                    iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen');
-                    iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
-                    
-                    // L'attributo 'sandbox' rimosso per permettere gli script di Google Ads
-                    
-                    iframe.setAttribute('title', 'YouTube video player');
-                    iframe.setAttribute('loading', 'lazy');
-                }
-            }, 500);
         }
     }
-
-    window.addEventListener('DOMContentLoaded', function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const autoUrl = urlParams.get('url');
-        if (autoUrl) {
-            document.getElementById('videoUrl').value = autoUrl;
-            setTimeout(startMultiView, 1000);
-        }
-    });
 </script>
 </body>
 </html>
