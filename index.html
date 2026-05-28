@@ -113,29 +113,6 @@
             border: none;
         }
 
-        /* Overlay trasparente: cattura il click e lo passa al player */
-        .play-overlay {
-            position: absolute;
-            inset: 0;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0,0,0,0.35);
-            transition: opacity 0.3s;
-        }
-
-        .play-overlay svg {
-            width: 54px;
-            height: 54px;
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.7));
-        }
-
-        .play-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
         @media (max-width: 1100px) {
             #players { grid-template-columns: repeat(3, 1fr); }
         }
@@ -184,27 +161,6 @@
     /* ── Pool di oggetti YT.Player indicizzati ── */
     const players = {};
 
-    /* ── Avvia un player tramite click sull'overlay ──
-       Questo è il punto critico: YouTube conta la view e mostra
-       la pubblicità SOLO se il .playVideo() è scatenato
-       da un gesto utente reale sul DOM (click).               */
-    function activatePlayer(index) {
-        const overlay = document.getElementById('overlay-' + index);
-        overlay.classList.add('hidden');
-
-        const p = players[index];
-        if (!p) return;
-
-        const isMuted = document.getElementById('audioSetting').value === '1';
-        const quality  = document.getElementById('qualitySetting').value;
-
-        p.setPlaybackQuality(quality);
-        if (isMuted) { p.mute(); } else { p.unMute(); p.setVolume(100); }
-
-        /* playVideo() dentro un handler click = user gesture autentico */
-        p.playVideo();
-    }
-
     function startMultiView() {
         const url      = document.getElementById('videoUrl').value.trim();
         const count    = Math.min(parseInt(document.getElementById('viewCount').value) || 1, 30);
@@ -225,69 +181,58 @@
         });
 
         for (let i = 0; i < count; i++) {
-            /* Slot esterno */
-            const slot = document.createElement('div');
-            slot.className = 'player-slot';
-            slot.id = 'slot-' + i;
+            // Ritardo progressivo per ingannare l'anti-spam. 1500 millisecondi (1.5s) tra un player e l'altro.
+            setTimeout(() => {
+                /* Slot esterno */
+                const slot = document.createElement('div');
+                slot.className = 'player-slot';
+                slot.id = 'slot-' + i;
 
-            /* Div target per YT.Player */
-            const target = document.createElement('div');
-            target.id = 'ytplayer-' + i;
-            slot.appendChild(target);
+                /* Div target per YT.Player */
+                const target = document.createElement('div');
+                target.id = 'ytplayer-' + i;
+                slot.appendChild(target);
 
-            /* Overlay con icona play */
-            const overlay = document.createElement('div');
-            overlay.className = 'play-overlay';
-            overlay.id = 'overlay-' + i;
-            overlay.innerHTML = `
-                <svg viewBox="0 0 68 68" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="34" cy="34" r="34" fill="rgba(0,0,0,0.6)"/>
-                  <polygon points="26,20 54,34 26,48" fill="#fff"/>
-                </svg>`;
-            /* Il click sull'overlay è il gesto utente che sblocca ads + view */
-            overlay.addEventListener('click', (function(idx){ return function(){ activatePlayer(idx); }; })(i));
-            slot.appendChild(overlay);
+                container.appendChild(slot);
 
-            container.appendChild(slot);
-
-            /* Crea il player senza autoplay:
-               - autoplay:0 → non parte da solo (nessun bot signal)
-               - Il play avviene solo via click → YouTube lo tratta come
-                 visualizzazione organica e abilita gli annunci              */
-            players[i] = new YT.Player('ytplayer-' + i, {
-                videoId: videoId,
-                playerVars: {
-                    autoplay:        0,
-                    mute:            isMuted ? 1 : 0,
-                    controls:        1,
-                    rel:             0,
-                    modestbranding:  1,
-                    playsinline:     1,
-                    /* origin deve corrispondere al dominio reale della pagina */
-                    origin:          location.origin || 'https://pooreyoutuber.github.io',
-                    enablejsapi:     1
-                },
-                events: {
-                    onReady: (function(idx, q, m) {
-                        return function(e) {
-                            e.target.setPlaybackQuality(q);
-                            /* Imposta una velocità leggermente variabile per ogni slot */
-                            const rates = [0.75, 1, 1, 1, 1.25];
-                            e.target.setPlaybackRate(rates[idx % rates.length]);
-                            if (m) { e.target.mute(); }
-                        };
-                    })(i, quality, isMuted),
-
-                    onStateChange: (function(idx, q) {
-                        return function(e) {
-                            /* Mantieni la qualità selezionata durante la riproduzione */
-                            if (e.data === YT.PlayerState.PLAYING) {
+                /* Crea il player senza autoplay:
+                   - autoplay:0 → non parte da solo (nessun bot signal)
+                   - Il play avviene solo via click diretto sul player nativo */
+                players[i] = new YT.Player('ytplayer-' + i, {
+                    videoId: videoId,
+                    playerVars: {
+                        autoplay:        0,
+                        mute:            isMuted ? 1 : 0,
+                        controls:        1,
+                        rel:             0,
+                        modestbranding:  1,
+                        playsinline:     1,
+                        /* origin deve corrispondere al dominio reale della pagina */
+                        origin:          location.origin || 'https://pooreyoutuber.github.io',
+                        enablejsapi:     1
+                    },
+                    events: {
+                        onReady: (function(idx, q, m) {
+                            return function(e) {
                                 e.target.setPlaybackQuality(q);
-                            }
-                        };
-                    })(i, quality)
-                }
-            });
+                                /* Imposta una velocità leggermente variabile per ogni slot */
+                                const rates = [0.75, 1, 1, 1, 1.25];
+                                e.target.setPlaybackRate(rates[idx % rates.length]);
+                                if (m) { e.target.mute(); }
+                            };
+                        })(i, quality, isMuted),
+
+                        onStateChange: (function(idx, q) {
+                            return function(e) {
+                                /* Mantieni la qualità selezionata durante la riproduzione */
+                                if (e.data === YT.PlayerState.PLAYING) {
+                                    e.target.setPlaybackQuality(q);
+                                }
+                            };
+                        })(i, quality)
+                    }
+                });
+            }, i * 1500); // <-- Moltiplica i millisecondi per l'indice del ciclo
         }
     }
 </script>
