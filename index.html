@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Multi Viewer Advanced</title>
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <title>YouTube Multi Viewer</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -18,7 +17,7 @@
 
         .form-wrap {
             max-width: 900px;
-            margin: 0 auto 20px;
+            margin: 0 auto 40px;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 16px;
@@ -39,11 +38,17 @@
             align-items: stretch;
         }
 
-        .input-row input[type="text"] { flex: 1 1 260px; min-width: 0; }
-        .input-row input[type="number"] { width: 80px; flex: 0 0 80px; }
-        .input-row select { flex: 1 1 140px; min-width: 0; }
+        .input-row input[type="text"] {
+            flex: 1 1 260px;
+            min-width: 0;
+        }
 
-        input, select {
+        .input-row input[type="number"] {
+            width: 80px;
+            flex: 0 0 80px;
+        }
+
+        input {
             padding: 11px 14px;
             border: 1px solid rgba(255,255,255,0.15);
             border-radius: 10px;
@@ -51,121 +56,74 @@
             background: rgba(255,255,255,0.07);
             color: #fff;
             outline: none;
-            transition: 0.2s;
+            transition: border-color 0.2s;
         }
 
-        input:focus, select:focus { border-color: #38bdf8; }
-        select option { background: #1e293b; color: #fff; }
+        input::placeholder { color: #64748b; }
+        input:focus { border-color: #38bdf8; }
 
-        .btn-primary {
+        button {
             padding: 11px 26px;
-            background: #38bdf8;
-            color: #0f172a;
+            background: #ef4444;
+            color: #fff;
             border: none;
             border-radius: 10px;
             font-size: 15px;
             font-weight: 700;
             cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-primary:hover { background: #0ea5e9; }
-        .btn-primary:disabled { background: #475569; cursor: not-allowed; }
-
-        /* Controlli di stato e Play All */
-        #status-area {
-            max-width: 900px;
-            margin: 0 auto 30px;
-            text-align: center;
-        }
-        
-        #loadingText {
-            font-size: 16px;
-            color: #fbbf24;
-            margin-bottom: 15px;
-            font-weight: 600;
-            display: none;
+            transition: background 0.2s, transform 0.15s;
+            flex: 0 0 auto;
         }
 
-        #masterPlayBtn {
-            display: none;
-            margin: 0 auto;
-            padding: 15px 40px;
-            background: #ef4444;
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-            transition: 0.3s;
-            animation: pulse 2s infinite;
-        }
-        #masterPlayBtn:hover { background: #dc2626; transform: scale(1.05); }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
+        button:hover { background: #dc2626; transform: translateY(-1px); }
 
         #players {
             max-width: 1400px;
             margin: 0 auto;
-            display: grid;
+            display: none;
             grid-template-columns: repeat(5, 1fr);
             gap: 16px;
         }
 
         .player-slot {
-            position: relative;
             width: 100%;
             aspect-ratio: 16/9;
             border-radius: 12px;
             overflow: hidden;
             background: #000;
-            opacity: 0;
-            animation: fadeIn 0.5s forwards;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
-        @keyframes fadeIn { to { opacity: 1; } }
-
-        .player-slot > div, .player-slot iframe {
-            position: absolute !important;
-            top: 0; left: 0;
-            width: 100% !important;
-            height: 100% !important;
+        iframe {
+            width: 100%;
+            height: 100%;
             border: none;
         }
 
-        @media (max-width: 1100px) { #players { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 700px) { #players { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 440px) { #players { grid-template-columns: 1fr; } }
+        @media (max-width: 1100px) {
+            #players { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 700px) {
+            #players { grid-template-columns: repeat(2, 1fr); }
+            .input-row input[type="number"] { width: 70px; flex: 0 0 70px; }
+        }
+        @media (max-width: 440px) {
+            #players { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
 <div class="form-wrap">
-    <h1>YouTube Multi Viewer</h1>
+    <h1>YouTube Multi Viewer (Standard Embed)</h1>
+    <p style="font-size: 13px; color: #94a3b8; margin-bottom: 15px;">
+        Nota: L'erogazione delle pubblicità è gestita esclusivamente dai server di Google. Per massimizzare le probabilità di vedere ads, avvia ogni video manualmente ascoltandone l'audio.
+    </p>
     <div class="input-row">
         <input type="text" id="videoUrl" placeholder="Incolla URL YouTube...">
-        <input type="number" id="viewCount" value="4" min="1" max="30">
-        <select id="audioSetting">
-            <option value="1">Muto</option>
-            <option value="0">Audio attivo (Più Ads)</option>
-        </select>
-        <select id="qualitySetting">
-            <option value="default">Auto</option>
-            <option value="small">240p</option>
-            <option value="hd720">720p</option>
-        </select>
-        <button class="btn-primary" id="generateBtn" onclick="startProcess()">Genera Player</button>
+        <input type="number" id="viewCount" value="4" min="1" max="30" title="Numero di player">
+        <button onclick="startMultiView()">Genera Player</button>
     </div>
-</div>
-
-<div id="status-area">
-    <div id="loadingText">Preparazione slot in corso...</div>
-    <button id="masterPlayBtn" onclick="playAllVideos()">▶ AVVIA TUTTI I VIDEO</button>
 </div>
 
 <div id="players"></div>
@@ -177,92 +135,34 @@
         return m ? m[1] : null;
     }
 
-    const players = {};
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-    async function startProcess() {
+    function startMultiView() {
         const url = document.getElementById('videoUrl').value.trim();
         const count = Math.min(parseInt(document.getElementById('viewCount').value) || 1, 30);
-        const quality = document.getElementById('qualitySetting').value;
         const videoId = getVideoId(url);
 
-        if (!videoId) { alert('URL YouTube non valido.'); return; }
-
-        // Setup UI
-        document.getElementById('generateBtn').disabled = true;
-        document.getElementById('masterPlayBtn').style.display = 'none';
-        const loadingText = document.getElementById('loadingText');
-        loadingText.style.display = 'block';
-        
-        const container = document.getElementById('players');
-        container.innerHTML = '';
-
-        // Pulisce la memoria precedente
-        Object.keys(players).forEach(k => {
-            try { players[k].destroy(); } catch(e) {}
-            delete players[k];
-        });
-
-        // Crea i player UNO ALLA VOLTA con una pausa vera e propria
-        for (let i = 0; i < count; i++) {
-            loadingText.innerText = `Caricamento player ${i + 1} di ${count} nel server... Attendere.`;
-            
-            await createSinglePlayer(i, videoId, quality);
-            await sleep(1500); // Pausa di 1.5 SECONDI tra ogni player
+        if (!videoId) { 
+            alert('URL YouTube non valido. Inserisci un link corretto.'); 
+            return; 
         }
 
-        loadingText.style.display = 'none';
-        document.getElementById('masterPlayBtn').style.display = 'block';
-        document.getElementById('generateBtn').disabled = false;
-    }
+        const container = document.getElementById('players');
+        container.innerHTML = ''; // Svuota i player precedenti
+        container.style.display = 'grid';
 
-    function createSinglePlayer(index, videoId, quality) {
-        return new Promise((resolve) => {
+        // Generazione iframe standard per massimizzare la conformità ad AdSense
+        for (let i = 0; i < count; i++) {
             const slot = document.createElement('div');
             slot.className = 'player-slot';
-            const target = document.createElement('div');
-            target.id = 'ytplayer-' + index;
-            slot.appendChild(target);
-            document.getElementById('players').appendChild(slot);
 
-            players[index] = new YT.Player('ytplayer-' + index, {
-                videoId: videoId,
-                playerVars: {
-                    autoplay: 0, // Devono restare fermi finché non si preme "Play All"
-                    mute: 1, // Iniziano in muto per aggirare i blocchi, l'audio viene attivato al click
-                    controls: 1,
-                    rel: 0,
-                    modestbranding: 1,
-                    playsinline: 1,
-                    enablejsapi: 1,
-                    origin: location.origin || 'https://pooreyoutuber.github.io'
-                },
-                events: {
-                    onReady: (e) => {
-                        e.target.setPlaybackQuality(quality);
-                        const rates = [0.75, 1, 1, 1, 1.25];
-                        e.target.setPlaybackRate(rates[index % rates.length]);
-                        resolve(); // Segnala al ciclo che questo player è pronto e può caricare il prossimo
-                    }
-                }
-            });
-        });
-    }
+            const iframe = document.createElement('iframe');
+            // Costruzione URL pulito. Nessun parametro sospetto.
+            iframe.src = `https://www.youtube.com/embed/${videoId}?rel=0`;
+            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            iframe.setAttribute('allowfullscreen', 'true');
 
-    function playAllVideos() {
-        const isMuted = document.getElementById('audioSetting').value === '1';
-        
-        // Nasconde il pulsantone dopo averlo cliccato
-        document.getElementById('masterPlayBtn').style.display = 'none';
-
-        // Avvia tutti i video. Il browser accetta questo comando perché proviene da un click umano!
-        Object.values(players).forEach(p => {
-            if (!isMuted) {
-                p.unMute();
-                p.setVolume(100);
-            }
-            p.playVideo();
-        });
+            slot.appendChild(iframe);
+            container.appendChild(slot);
+        }
     }
 </script>
 </body>
