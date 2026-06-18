@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Convertitore storico Euro-Lire con calcolo dell'inflazione e della svalutazione. Scopri il reale potere d'acquisto della Lira italiana rispetto all'Euro di oggi.">
-    <title>Convertitore Storico Euro - Lire con Inflazione | Vincenzo Lab</title>
+    <meta name="description" content="Vincenzo Lab: Strumenti finanziari gratuiti, calcolatori economici e utility web. Calcola mutui, prestiti, inflazione e molto altro con i nostri tool online.">
+    <title>Vincenzo Lab | Calcolatori Finanziari e Strumenti Web Gratuiti</title>
     
-    <!-- SCRIPT GOOGLE ADSENSE INSERITO QUI -->
+    <!-- Script Google AdSense Obbligatorio per l'approvazione -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4224914752965906" crossorigin="anonymous"></script>
 
     <style>
         :root {
-            --primary: #0284c7;
-            --primary-dark: #0369a1;
+            --primary: #0f766e; /* Verde scuro, ispira fiducia e finanza */
+            --primary-light: #14b8a6;
             --bg: #f8fafc;
             --card-bg: #ffffff;
-            --text: #0f172a;
+            --text: #1e293b;
             --text-light: #475569;
             --border: #e2e8f0;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
@@ -29,219 +29,229 @@
             line-height: 1.6;
         }
 
-        .header {
-            background-color: var(--primary);
+        /* Navigazione */
+        nav {
+            background-color: var(--card-bg);
+            padding: 15px 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #064e3b 100%);
             color: white;
-            padding: 20px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 60px 20px;
         }
 
-        .header h1 {
-            margin: 0;
-            font-size: 28px;
+        .hero h1 {
+            font-size: 36px;
+            margin: 0 0 15px 0;
         }
 
-        .main-content {
-            max-width: 800px;
+        .hero p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        /* Contenuto Principale */
+        .main-container {
+            max-width: 1000px;
             margin: 40px auto;
             padding: 0 20px;
         }
 
-        .tool-container {
+        /* Griglia Strumenti */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .tool-card {
             background: var(--card-bg);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            border-color: var(--primary-light);
+        }
+
+        .tool-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .tool-title {
+            font-size: 20px;
+            color: var(--primary);
+            margin: 0 0 10px 0;
+        }
+
+        .tool-desc {
+            font-size: 14px;
+            color: var(--text-light);
+            margin: 0;
+        }
+
+        /* Sezione Testo SEO / Trust */
+        .content-section {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             margin-bottom: 40px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 16px;
-            box-sizing: border-box;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--primary);
-        }
-
-        .result-box {
-            background-color: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 25px;
-            display: none;
-        }
-
-        .result-title {
-            font-size: 14px;
-            color: #166534;
-            text-transform: uppercase;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .result-value {
-            font-size: 24px;
-            font-weight: 800;
-            color: #14532d;
-        }
-
-        .info-text {
-            font-size: 14px;
-            color: var(--text-light);
-            margin-top: 10px;
-        }
-
-        .article-section {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .article-section h2 {
-            color: var(--primary-dark);
+        .content-section h2 {
+            color: var(--primary);
             margin-top: 0;
         }
 
+        .content-section h3 {
+            color: #334155;
+            margin-top: 25px;
+        }
+
+        /* Footer */
         footer {
+            background-color: #1e293b;
+            color: #94a3b8;
             text-align: center;
-            padding: 20px;
-            color: var(--text-light);
+            padding: 30px 20px;
             font-size: 14px;
-            margin-top: 40px;
-            border-top: 1px solid var(--border);
+        }
+
+        footer a {
+            color: #cbd5e1;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .nav-links { display: none; } /* Su mobile nascondiamo i link extra per pulizia al momento */
+            .hero h1 { font-size: 28px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>Calcolatore Storico Euro - Lire</h1>
-    </div>
+    <!-- Menu di Navigazione -->
+    <nav>
+        <a href="index.html" class="logo">Vincenzo Lab</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="#strumenti">Strumenti</a>
+            <a href="#chi-siamo">Chi Siamo</a>
+        </div>
+    </nav>
 
-    <div class="main-content">
+    <!-- Intestazione -->
+    <header class="hero">
+        <h1>Calcolatori Finanziari Semplificati</h1>
+        <p>Prendi il controllo delle tue finanze. Strumenti matematici, convertitori storici e simulatori gratuiti per calcoli precisi e immediati.</p>
+    </header>
+
+    <main class="main-container">
         
-        <!-- SEZIONE STRUMENTO -->
-        <div class="tool-container">
-            <p>Usa questo strumento per calcolare il valore reale del denaro nel tempo, tenendo conto dell'inflazione storica italiana e del tasso di conversione fisso (1 € = 1936,27 Lire).</p>
+        <!-- Vetrina Strumenti -->
+        <h2 id="strumenti" style="text-align: center; color: var(--text); margin-bottom: 30px;">I Nostri Strumenti</h2>
+        
+        <div class="tools-grid">
+            <!-- Link al file del convertitore che creeremo separatamente -->
+            <a href="convertitore.html" class="tool-card">
+                <div class="tool-icon">💶</div>
+                <h3 class="tool-title">Convertitore Storico Euro-Lire</h3>
+                <p class="tool-desc">Calcola il potere d'acquisto reale tenendo conto dell'inflazione ISTAT dal 1960 al 2001. Scopri il vero valore storico del denaro.</p>
+            </a>
 
-            <div class="form-group">
-                <label for="direction">Seleziona il tipo di calcolo</label>
-                <select id="direction" onchange="convert()">
-                    <option value="eurToLit">Da Euro di oggi a Lire del passato</option>
-                    <option value="litToEur">Da Lire del passato a Euro di oggi</option>
-                </select>
-            </div>
+            <!-- Link al futuro calcolatore mutuo -->
+            <a href="mutuo.html" class="tool-card">
+                <div class="tool-icon">🏠</div>
+                <h3 class="tool-title">Simulatore Rata Mutuo</h3>
+                <p class="tool-desc">Pianifica l'acquisto della tua casa calcolando la rata mensile, il piano di ammortamento e gli interessi totali in base al tasso fisso.</p>
+            </a>
 
-            <div class="form-group">
-                <label for="amount">Inserisci l'importo</label>
-                <input type="number" id="amount" placeholder="Es. 1000" min="0" step="0.01" oninput="convert()">
-            </div>
-
-            <div class="form-group">
-                <label for="year">Anno di riferimento</label>
-                <select id="year" onchange="convert()">
-                    <option value="2001">2001 (Ultimo anno della Lira)</option>
-                    <option value="1995">1995</option>
-                    <option value="1990">1990</option>
-                    <option value="1985">1985</option>
-                    <option value="1980">1980</option>
-                    <option value="1970">1970</option>
-                    <option value="1960">1960</option>
-                </select>
-            </div>
-
-            <div class="result-box" id="resultBox">
-                <div class="result-title" id="resultTitle">Valore Equivalente</div>
-                <div class="result-value" id="resultValue">-</div>
-                <div class="info-text" id="infoText"></div>
-            </div>
+            <!-- Link al futuro calcolatore prestiti -->
+            <a href="prestito.html" class="tool-card">
+                <div class="tool-icon">📊</div>
+                <h3 class="tool-title">Calcolatore Prestiti Personali</h3>
+                <p class="tool-desc">Analizza i costi reali di un finanziamento. Inserisci capitale e TAN per scoprire l'impatto effettivo sul tuo bilancio mensile.</p>
+            </a>
         </div>
 
-        <!-- SEZIONE TESTO PER LA SEO E ADSENSE -->
-        <div class="article-section">
-            <h2>Come funziona il cambio Euro-Lira con l'inflazione?</h2>
-            <p>Molto spesso, quando facciamo conversioni mentali tra Euro e vecchie Lire, commettiamo l'errore di applicare il semplice tasso di cambio fisso del 2002 (ovvero <strong>1 Euro = 1936,27 Lire</strong>). Tuttavia, questo calcolo non tiene conto di un fattore economico fondamentale: <strong>l'inflazione</strong> e la perdita del potere d'acquisto nel corso dei decenni.</p>
+        <!-- Sezione Informativa Obbligatoria (Per AdSense e SEO) -->
+        <section class="content-section" id="chi-siamo">
+            <h2>L'importanza dell'Educazione Finanziaria Digitale</h2>
+            <p>Benvenuti su Vincenzo Lab. Nel mondo economico attuale, caratterizzato da tassi di interesse fluttuanti e un'inflazione costante, comprendere la matematica che governa i nostri soldi è diventato un requisito essenziale, non più un lusso. L'obiettivo di questo portale è fornire utility di calcolo trasparenti e accessibili a tutti direttamente dal browser, senza necessità di installare applicazioni o registrare account.</p>
             
-            <h3>Il potere d'acquisto nel tempo</h3>
-            <p>Per capire il reale valore del denaro, dobbiamo guardare al potere d'acquisto. Un milione di lire nel 1980 aveva un valore reale molto diverso rispetto a un milione di lire nel 2001. I dati storici dell'ISTAT ci permettono di applicare dei coefficienti di rivalutazione monetaria per capire quanto costava la vita in passato e come rapportare quelle cifre agli Euro che spendiamo oggi.</p>
+            <h3>Perché utilizzare i nostri calcolatori?</h3>
+            <p>Spesso i contratti bancari, le offerte di prestiti personali e i prospetti dei mutui immobiliari utilizzano un linguaggio tecnico complesso. I tassi nominali (TAN) e i tassi effettivi (TAEG) possono confondere il consumatore medio. I nostri simulatori nascono per tradurre queste percentuali in cifre reali e tangibili: l'esatto importo in Euro che verrà detratto dal conto corrente ogni mese. Questo permette agli utenti di confrontare in modo indipendente diverse offerte bancarie prima di firmare qualsiasi contratto.</p>
             
-            <h3>Perché usare questo strumento</h3>
-            <p>Questo calcolatore è stato progettato per storici, studenti, o semplicemente curiosi che vogliono tradurre i prezzi di vecchie riviste, automobili d'epoca o stipendi del passato in valori moderni e comprensibili. È sufficiente inserire la cifra, selezionare l'anno di riferimento e lo strumento applicherà matematicamente il coefficiente di svalutazione corretto.</p>
-        </div>
+            <h3>La memoria economica e l'inflazione</h3>
+            <p>Oltre alla finanza personale moderna, Vincenzo Lab dedica uno spazio alla storia economica. Il nostro convertitore storico Euro-Lire non si limita ad applicare il tasso di cambio fisso introdotto nel 2002. Implementando i coefficienti ufficiali di rivalutazione, lo strumento mostra in modo pratico l'impatto distruttivo dell'inflazione sul potere d'acquisto nel corso dei decenni. Comprendere come si svalutava il denaro in passato è la chiave per comprendere la necessità di proteggere i propri risparmi nel presente.</p>
+            
+            <h3>Sicurezza e Trasparenza</h3>
+            <p>Tutti i calcoli eseguiti su Vincenzo Lab avvengono lato client (direttamente nel dispositivo dell'utente). Non raccogliamo dati finanziari sensibili, non chiediamo redditi reali e non salviamo le cifre inserite nei nostri form. Offriamo pura potenza di calcolo matematica al servizio dell'educazione finanziaria del cittadino.</p>
+        </section>
 
-    </div>
+    </main>
 
+    <!-- Footer con Pagine Legali -->
     <footer>
-        &copy; 2026 Vincenzo Lab - Strumenti Web Gratuiti
+        <div style="margin-bottom: 15px;">
+            <a href="chi-siamo.html">Chi Siamo</a> | 
+            <a href="contatti.html">Contatti</a> | 
+            <a href="privacy.html">Privacy Policy & Termini di Servizio</a>
+        </div>
+        <div>&copy; 2026 Vincenzo Lab - Tutti i diritti riservati. <br> Gli strumenti forniti hanno scopo puramente informativo e matematico e non costituiscono consulenza finanziaria.</div>
     </footer>
-
-    <script>
-        const inflationCoefficients = {
-            "2001": 1.02,
-            "1995": 1.28,
-            "1990": 1.62,
-            "1985": 2.24,
-            "1980": 3.95,
-            "1970": 11.20,
-            "1960": 21.80
-        };
-
-        const CHANGE_RATE = 1936.27;
-
-        function convert() {
-            const direction = document.getElementById('direction').value;
-            const amount = parseFloat(document.getElementById('amount').value);
-            const year = document.getElementById('year').value;
-            
-            const resultBox = document.getElementById('resultBox');
-            const resultValue = document.getElementById('resultValue');
-            const infoText = document.getElementById('infoText');
-
-            if (isNaN(amount) || amount <= 0) {
-                resultBox.style.display = 'none';
-                return;
-            }
-
-            resultBox.style.display = 'block';
-            const coef = inflationCoefficients[year];
-
-            if (direction === "eurToLit") {
-                const lireFisse = amount * CHANGE_RATE;
-                const lireStoriche = lireFisse / coef;
-
-                resultValue.innerText = Math.round(lireStoriche).toLocaleString('it-IT') + " Lire";
-                infoText.innerHTML = `<strong>Dettagli:</strong> ${amount.toLocaleString('it-IT')} € di oggi corrispondono a circa ${Math.round(lireStoriche).toLocaleString('it-IT')} Lire nel ${year} a livello di potere d'acquisto. (Senza inflazione sarebbero state ${Math.round(lireFisse).toLocaleString('it-IT')} Lire).`;
-            
-            } else {
-                const euroFissi = amount / CHANGE_RATE;
-                const euroOggi = euroFissi * coef;
-
-                resultValue.innerText = euroOggi.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
-                infoText.innerHTML = `<strong>Dettagli:</strong> Il potere d'acquisto di ${amount.toLocaleString('it-IT')} Lire nel ${year} equivale a ${euroOggi.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € di oggi. (Senza contare l'inflazione, il mero calcolo matematico equivarrebbe a soli ${euroFissi.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €).`;
-            }
-        }
-    </script>
 
 </body>
 </html>
