@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calcolatore gratuito per prestiti personali e finanziamenti. Simula la rata mensile, calcola gli interessi totali e scopri il vero costo del credito al consumo.">
+    <title>Calcolatore Prestiti Personali | Simulatore Finanziamento | Vincenzo Lab</title>
+    
+    <!-- Script Google AdSense Obbligatorio -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4224914752965906" crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --primary: #0f766e;
+            --primary-light: #14b8a6;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #475569;
+            --border: #e2e8f0;
+            --accent: #ea580c; /* Arancione per distinguere il prestito dal mutuo */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        nav {
+            background-color: var(--card-bg);
+            padding: 15px 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            margin-left: 20px;
+        }
+
+        .nav-links a:hover { color: var(--primary); }
+
+        .header-title {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .header-title h1 { margin: 0; font-size: 32px; }
+        .header-title p { opacity: 0.9; margin-top: 10px; font-size: 18px; }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Stile Calcolatore */
+        .calculator-box {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid var(--accent);
+            margin-bottom: 40px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media(min-width: 768px) {
+            .calculator-box {
+                grid-template-columns: 1fr 1fr;
+            }
+            .input-section {
+                padding-right: 20px;
+                border-right: 1px solid var(--border);
+            }
+            .result-section {
+                padding-left: 20px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+        }
+
+        .form-group { margin-bottom: 20px; }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .result-box {
+            background-color: #fff7ed;
+            border: 1px solid #fed7aa;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .result-title {
+            font-size: 14px;
+            color: #9a3412;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #7c2d12;
+            margin: 0 0 15px 0;
+        }
+
+        .result-details {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #fed7aa;
+            padding-top: 15px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #9a3412;
+            text-align: left;
+        }
+
+        .detail-item strong {
+            display: block;
+            font-size: 18px;
+            color: #7c2d12;
+        }
+
+        /* Stile Articolo SEO */
+        .article-content {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 40px;
+        }
+
+        .article-content h2 { color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 10px;}
+        .article-content h3 { color: #334155; margin-top: 30px; }
+        .article-content ul { padding-left: 20px; }
+        .article-content li { margin-bottom: 10px; }
+
+        footer {
+            background-color: #1e293b;
+            color: #94a3b8;
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 14px;
+        }
+
+        footer a { color: #cbd5e1; text-decoration: none; margin: 0 10px; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">Vincenzo Lab</a>
+        <div class="nav-links">
+            <a href="index.html">Torna alla Home</a>
+        </div>
+    </nav>
+
+    <div class="header-title">
+        <h1>Calcolatore Prestiti Personali</h1>
+        <p>Pianifica il tuo finanziamento calcolando rata mensile e costo totale del credito.</p>
+    </div>
+
+    <div class="container">
+        
+        <div class="calculator-box">
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="principal">Importo del Prestito (€)</label>
+                    <input type="number" id="principal" placeholder="Es. 10000" min="500" step="500" oninput="calculateLoan()">
+                </div>
+
+                <div class="form-group">
+                    <label for="months">Durata del Prestito (in Mesi)</label>
+                    <input type="number" id="months" placeholder="Es. 48" min="6" max="120" oninput="calculateLoan()">
+                </div>
+
+                <div class="form-group">
+                    <label for="rate">Tasso di Interesse Annuo (TAN in %)</label>
+                    <input type="number" id="rate" placeholder="Es. 6.5" min="0" step="0.1" oninput="calculateLoan()">
+                </div>
+            </div>
+
+            <div class="result-section">
+                <div id="initialMessage" style="text-align: center; color: var(--text-light); padding: 20px;">
+                    <em>Inserisci l'importo desiderato, i mesi e il TAN per visualizzare la rata del tuo finanziamento.</em>
+                </div>
+
+                <div class="result-box" id="resultBox">
+                    <div class="result-title">La rata mensile stimata è</div>
+                    <div class="result-value" id="monthlyPayment">0,00 €</div>
+                    
+                    <div class="result-details">
+                        <div class="detail-item">
+                            Interessi Passivi
+                            <strong id="totalInterest">0,00 €</strong>
+                        </div>
+                        <div class="detail-item" style="text-align: right;">
+                            Capitale + Interessi
+                            <strong id="totalRepayment">0,00 €</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <article class="article-content">
+            <h2>Guida ai Prestiti Personali e al Credito al Consumo</h2>
+            <p>Il prestito personale è la forma di finanziamento più richiesta dalle famiglie italiane. Che si tratti di acquistare un'auto nuova, ristrutturare casa, ottenere liquidità immediata o procedere con un consolidamento debiti, calcolare in anticipo la sostenibilità della rata è il primo passo per una gestione sana delle proprie finanze.</p>
+
+            <h3>Come si differenzia un prestito da un mutuo?</h3>
+            <p>A livello matematico, la formula per calcolare la rata (ammortamento alla francese) è la stessa, ma le condizioni contrattuali sono molto diverse:</p>
+            <ul>
+                <li><strong>Assenza di Garanzie Reali:</strong> Il mutuo richiede l'ipoteca sulla casa. Il prestito personale è un credito "non finalizzato" o "finalizzato" che si basa unicamente sulla firma e sulla busta paga del richiedente (o sulla pensione, nel caso della Cessione del Quinto).</li>
+                <li><strong>Durata:</strong> I prestiti hanno durate molto più brevi, generalmente dai 12 ai 120 mesi (1-10 anni).</li>
+                <li><strong>Tassi di Interesse:</strong> Proprio per l'assenza di un'ipoteca che tuteli la banca, i prestiti personali hanno tassi di interesse (TAN e TAEG) storicamente molto più alti rispetto ai mutui.</li>
+            </ul>
+
+            <h3>Il tranello delle assicurazioni (Polizze CPI)</h3>
+            <p>Quando si simula la rata di un prestito e ci si reca in banca o in finanziaria, spesso la rata reale proposta è più alta di quella calcolata. Questo accade per via delle <strong>Polizze a Protezione del Credito (CPI)</strong>. Sono assicurazioni che coprono il debito in caso di perdita del lavoro, infortunio o decesso.</p>
+            <p><em>Attenzione:</em> Per legge, nella maggior parte dei prestiti personali tradizionali, queste polizze sono <strong>facoltative</strong>. Spesso vengono presentate come obbligatorie per far scattare le provvigioni degli agenti. Valuta attentamente se ti servono prima di firmare, poiché aumentano notevolmente il costo totale del finanziamento (e il TAEG).</p>
+
+            <h3>Il Consolidamento Debiti</h3>
+            <p>Se hai all'attivo più prestiti (la rata dell'auto, il finanziamento del televisore, un prestito liquidità), potresti trovarti in affanno a fine mese. Il consolidamento debiti è un'operazione finanziaria che permette di unire tutti i debiti in corso in un unico nuovo prestito personale. L'obiettivo è allungare la durata per ottenere un'<strong>unica rata mensile molto più bassa</strong> e gestibile, anche se questo comporta il pagamento di un maggior numero di interessi nel lungo periodo.</p>
+
+            <h3>L'estinzione anticipata</h3>
+            <p>La normativa sul credito ai consumatori tutela chi vuole chiudere il debito prima del tempo. Puoi rimborsare anticipatamente l'importo residuo del prestito in qualsiasi momento. La banca o finanziaria può applicare una penale (chiamata indennizzo) che per legge <strong>non può superare l'1%</strong> del capitale residuo se manca più di un anno alla scadenza, o lo 0,5% se manca meno di un anno.</p>
+        </article>
+
+    </div>
+
+    <footer>
+        <div style="margin-bottom: 15px;">
+            <a href="chi-siamo.html">Chi Siamo</a> | 
+            <a href="contatti.html">Contatti</a> | 
+            <a href="privacy.html">Privacy Policy</a>
+        </div>
+        <div>&copy; 2026 Vincenzo Lab - Strumento con finalità puramente informative. Il TAEG effettivo verrà comunicato dall'ente erogatore in fase di preventivo ufficiale.</div>
+    </footer>
+
+    <script>
+        function calculateLoan() {
+            const principal = parseFloat(document.getElementById('principal').value);
+            const months = parseInt(document.getElementById('months').value);
+            const rate = parseFloat(document.getElementById('rate').value);
+
+            const initialMessage = document.getElementById('initialMessage');
+            const resultBox = document.getElementById('resultBox');
+
+            // Verifica validità campi
+            if (isNaN(principal) || isNaN(months) || isNaN(rate) || principal <= 0 || months <= 0 || rate < 0) {
+                resultBox.style.display = 'none';
+                initialMessage.style.display = 'block';
+                return;
+            }
+
+            // Calcoli base
+            const monthlyRate = (rate / 100) / 12;
+            
+            let monthlyPayment = 0;
+            if(rate === 0) {
+                monthlyPayment = principal / months;
+            } else {
+                monthlyPayment = (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+            }
+
+            const totalRepayment = monthlyPayment * months;
+            const totalInterest = totalRepayment - principal;
+
+            // Formattazione
+            const formatCurrency = (amount) => {
+                return amount.toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
+            };
+
+            // Inserimento nei div
+            document.getElementById('monthlyPayment').innerText = formatCurrency(monthlyPayment);
+            document.getElementById('totalInterest').innerText = formatCurrency(totalInterest);
+            document.getElementById('totalRepayment').innerText = formatCurrency(totalRepayment);
+
+            // Mostra i risultati
+            initialMessage.style.display = 'none';
+            resultBox.style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>
