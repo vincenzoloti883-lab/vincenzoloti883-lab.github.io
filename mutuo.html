@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simulatore gratuito per calcolare la rata del mutuo. Scopri gli interessi totali, il piano di ammortamento e le differenze tra TAN e TAEG per il tuo prestito casa.">
+    <title>Calcolatore Rata Mutuo | Simulatore Interessi | Vincenzo Lab</title>
+    
+    <!-- Script Google AdSense Obbligatorio -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4224914752965906" crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --primary: #0f766e;
+            --primary-light: #14b8a6;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #475569;
+            --border: #e2e8f0;
+            --accent: #0284c7;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        nav {
+            background-color: var(--card-bg);
+            padding: 15px 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            margin-left: 20px;
+        }
+
+        .nav-links a:hover { color: var(--primary); }
+
+        .header-title {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .header-title h1 { margin: 0; font-size: 32px; }
+        .header-title p { opacity: 0.9; margin-top: 10px; font-size: 18px; }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Stile Calcolatore */
+        .calculator-box {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid var(--accent);
+            margin-bottom: 40px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media(min-width: 768px) {
+            .calculator-box {
+                grid-template-columns: 1fr 1fr;
+            }
+            .input-section {
+                padding-right: 20px;
+                border-right: 1px solid var(--border);
+            }
+            .result-section {
+                padding-left: 20px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+        }
+
+        .form-group { margin-bottom: 20px; }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .result-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            display: none; /* Nascosto fino al calcolo */
+        }
+
+        .result-title {
+            font-size: 14px;
+            color: #166534;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #14532d;
+            margin: 0 0 15px 0;
+        }
+
+        .result-details {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #bbf7d0;
+            padding-top: 15px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #166534;
+            text-align: left;
+        }
+
+        .detail-item strong {
+            display: block;
+            font-size: 18px;
+            color: #14532d;
+        }
+
+        /* Stile Articolo SEO */
+        .article-content {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 40px;
+        }
+
+        .article-content h2 { color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 10px;}
+        .article-content h3 { color: #334155; margin-top: 30px; }
+        .article-content ul { padding-left: 20px; }
+        .article-content li { margin-bottom: 10px; }
+
+        footer {
+            background-color: #1e293b;
+            color: #94a3b8;
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 14px;
+        }
+
+        footer a { color: #cbd5e1; text-decoration: none; margin: 0 10px; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">Vincenzo Lab</a>
+        <div class="nav-links">
+            <a href="index.html">Torna alla Home</a>
+        </div>
+    </nav>
+
+    <div class="header-title">
+        <h1>Simulatore Rata Mutuo</h1>
+        <p>Calcola in tempo reale la rata mensile e gli interessi del tuo finanziamento immobiliare.</p>
+    </div>
+
+    <div class="container">
+        
+        <div class="calculator-box">
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="principal">Importo del Mutuo (€)</label>
+                    <input type="number" id="principal" placeholder="Es. 150000" min="1000" step="1000" oninput="calculateMortgage()">
+                </div>
+
+                <div class="form-group">
+                    <label for="years">Durata del Mutuo (Anni)</label>
+                    <input type="number" id="years" placeholder="Es. 20" min="1" max="50" oninput="calculateMortgage()">
+                </div>
+
+                <div class="form-group">
+                    <label for="rate">Tasso di Interesse Annuo (TAN in %)</label>
+                    <input type="number" id="rate" placeholder="Es. 3.5" min="0" step="0.1" oninput="calculateMortgage()">
+                </div>
+            </div>
+
+            <div class="result-section">
+                <div id="initialMessage" style="text-align: center; color: var(--text-light); padding: 20px;">
+                    <em>Inserisci i dati a sinistra per visualizzare la simulazione della rata mensile.</em>
+                </div>
+
+                <div class="result-box" id="resultBox">
+                    <div class="result-title">La tua rata mensile</div>
+                    <div class="result-value" id="monthlyPayment">0,00 €</div>
+                    
+                    <div class="result-details">
+                        <div class="detail-item">
+                            Totale Interessi
+                            <strong id="totalInterest">0,00 €</strong>
+                        </div>
+                        <div class="detail-item" style="text-align: right;">
+                            Totale da Restituire
+                            <strong id="totalRepayment">0,00 €</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <article class="article-content">
+            <h2>Guida al Calcolo della Rata del Mutuo</h2>
+            <p>Accendere un mutuo per l'acquisto della prima o della seconda casa è, per la maggior parte delle famiglie, la decisione finanziaria più importante della vita. Comprendere esattamente come la banca calcola la rata e quanti interessi si andranno a versare negli anni è fondamentale per non trovarsi in difficoltà. Questo simulatore ti permette di calcolare i costi del tuo mutuo in completa autonomia e trasparenza.</p>
+
+            <h3>Come funziona l'ammortamento alla francese?</h3>
+            <p>Il nostro calcolatore utilizza la formula matematica dell'<strong>ammortamento alla francese</strong>, che è lo standard utilizzato dal 99% degli istituti di credito in Italia ed Europa. Questo sistema prevede una rata mensile costante (nel caso di un mutuo a tasso fisso) composta da due elementi che cambiano nel tempo:</p>
+            <ul>
+                <li><strong>Quota Interessi:</strong> È altissima nelle prime rate e va diminuendo col tempo.</li>
+                <li><strong>Quota Capitale:</strong> È molto bassa all'inizio e aumenta gradualmente avvicinandosi alla fine del prestito.</li>
+            </ul>
+            <p>Questo significa che nei primi anni del mutuo starai pagando quasi esclusivamente gli interessi alla banca. È per questo motivo che le estinzioni anticipate o le surroghe sono molto più convenienti se effettuate nei primi anni di vita del finanziamento.</p>
+
+            <h3>Differenza tra TAN e TAEG: Cosa inserire nel simulatore?</h3>
+            <p>Per ottenere un calcolo corretto in questo strumento, devi inserire il <strong>TAN (Tasso Annuo Nominale)</strong>. Ma qual è la differenza con il TAEG?</p>
+            <ul>
+                <li><strong>Il TAN</strong> rappresenta il tasso di interesse "puro" che la banca applica al capitale prestato (formato dall'indice di riferimento IRS o Euribor, più lo spread della banca). È questo il valore matematico che genera la rata mensile.</li>
+                <li><strong>Il TAEG (Tasso Annuo Effettivo Globale)</strong> non serve a calcolare la rata, ma è l'indicatore sintetico di costo. Include il TAN più tutte le spese accessorie obbligatorie: spese di istruttoria, perizia tecnica del perito, assicurazioni obbligatorie (scoppio e incendio) e costi di incasso rata. Serve per confrontare la convenienza tra due offerte bancarie diverse.</li>
+            </ul>
+
+            <h3>Tasso Fisso o Tasso Variabile?</h3>
+            <p>La scelta del tasso è il vero ago della bilancia in un mutuo immobiliare:</p>
+            <p><strong>Mutuo a Tasso Fisso:</strong> La rata rimane identica dal primo all'ultimo mese, a prescindere da cosa accade all'economia mondiale, all'inflazione o alle decisioni della BCE (Banca Centrale Europea). Offre sicurezza e pianificazione certa, ma storicamente parte da percentuali leggermente più alte rispetto al variabile.</p>
+            <p><strong>Mutuo a Tasso Variabile:</strong> La rata fluttua nel tempo seguendo l'andamento dell'Euribor. Se i tassi scendono, la rata si abbassa notevolmente, ma se i tassi salgono per combattere l'inflazione, la rata può subire impennate pericolose per il bilancio familiare. È adatto a chi ha un reddito solido e può sopportare eventuali rialzi.</p>
+
+            <h3>L'importanza della simulazione</h3>
+            <p>Utilizza il nostro calcolatore gratuito per fare diverse prove (stress test). Prova ad allungare la durata da 20 a 30 anni: noterai che la rata mensile si abbassa, ma il "Totale Interessi" che regalerai alla banca alla fine del prestito aumenterà vertiginosamente. Trovare l'equilibrio perfetto tra una rata sostenibile e il minor ammontare di interessi pagati è il segreto di una buona pianificazione finanziaria.</p>
+        </article>
+
+    </div>
+
+    <footer>
+        <div style="margin-bottom: 15px;">
+            <a href="chi-siamo.html">Chi Siamo</a> | 
+            <a href="contatti.html">Contatti</a> | 
+            <a href="privacy.html">Privacy Policy</a>
+        </div>
+        <div>&copy; 2026 Vincenzo Lab - Calcoli puramente matematici e indicativi. Non costituiscono offerta contrattuale.</div>
+    </footer>
+
+    <script>
+        function calculateMortgage() {
+            const principal = parseFloat(document.getElementById('principal').value);
+            const years = parseInt(document.getElementById('years').value);
+            const rate = parseFloat(document.getElementById('rate').value);
+
+            const initialMessage = document.getElementById('initialMessage');
+            const resultBox = document.getElementById('resultBox');
+
+            // Verifica che i campi siano validi
+            if (isNaN(principal) || isNaN(years) || isNaN(rate) || principal <= 0 || years <= 0 || rate < 0) {
+                resultBox.style.display = 'none';
+                initialMessage.style.display = 'block';
+                return;
+            }
+
+            // Calcoli
+            const monthlyRate = (rate / 100) / 12;
+            const numberOfPayments = years * 12;
+            
+            let monthlyPayment = 0;
+            if(rate === 0) {
+                // Se per caso il tasso è 0%
+                monthlyPayment = principal / numberOfPayments;
+            } else {
+                // Formula Ammortamento alla Francese
+                monthlyPayment = (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -numberOfPayments));
+            }
+
+            const totalRepayment = monthlyPayment * numberOfPayments;
+            const totalInterest = totalRepayment - principal;
+
+            // Formattazione in Valuta (Euro)
+            const formatCurrency = (amount) => {
+                return amount.toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
+            };
+
+            // Stampa a schermo
+            document.getElementById('monthlyPayment').innerText = formatCurrency(monthlyPayment);
+            document.getElementById('totalInterest').innerText = formatCurrency(totalInterest);
+            document.getElementById('totalRepayment').innerText = formatCurrency(totalRepayment);
+
+            // Cambia visualizzazione
+            initialMessage.style.display = 'none';
+            resultBox.style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>
