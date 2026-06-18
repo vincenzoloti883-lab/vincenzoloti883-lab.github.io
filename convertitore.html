@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calcola il potere d'acquisto storico tra Euro e Lire. Convertitore con inflazione ISTAT integrata per capire il reale valore del denaro dal 1960 a oggi.">
+    <title>Convertitore Storico Euro-Lire con Inflazione | Vincenzo Lab</title>
+    
+    <!-- Script Google AdSense Obbligatorio -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4224914752965906" crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --primary: #0f766e;
+            --primary-light: #14b8a6;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #475569;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        nav {
+            background-color: var(--card-bg);
+            padding: 15px 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            margin-left: 20px;
+        }
+
+        .nav-links a:hover { color: var(--primary); }
+
+        .header-title {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .header-title h1 { margin: 0; font-size: 32px; }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Stile Calcolatore */
+        .calculator-box {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid var(--primary);
+            margin-bottom: 40px;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .result-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+            display: none;
+        }
+
+        .result-title {
+            font-size: 14px;
+            color: #166534;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .result-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #14532d;
+            margin: 10px 0;
+        }
+
+        /* Stile Articolo SEO */
+        .article-content {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 40px;
+        }
+
+        .article-content h2 { color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 10px;}
+        .article-content h3 { color: #334155; margin-top: 30px; }
+        .article-content ul { padding-left: 20px; }
+        .article-content li { margin-bottom: 10px; }
+
+        footer {
+            background-color: #1e293b;
+            color: #94a3b8;
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 14px;
+        }
+
+        footer a { color: #cbd5e1; text-decoration: none; margin: 0 10px; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">Vincenzo Lab</a>
+        <div class="nav-links">
+            <a href="index.html">Torna alla Home</a>
+        </div>
+    </nav>
+
+    <div class="header-title">
+        <h1>Convertitore Storico Euro-Lire</h1>
+        <p>Calcola il potere d'acquisto reale applicando l'inflazione storica italiana.</p>
+    </div>
+
+    <div class="container">
+        
+        <div class="calculator-box">
+            <div class="form-group">
+                <label for="direction">Che tipo di calcolo vuoi effettuare?</label>
+                <select id="direction" onchange="convert()">
+                    <option value="eurToLit">Ho degli Euro di oggi e voglio sapere a quante Lire corrispondono in passato</option>
+                    <option value="litToEur">Ho una cifra in vecchie Lire e voglio sapere quanti Euro sarebbero oggi</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Inserisci l'importo (solo numeri)</label>
+                <input type="number" id="amount" placeholder="Es. 1500" min="0" step="0.01" oninput="convert()">
+            </div>
+
+            <div class="form-group">
+                <label for="year">Seleziona l'anno storico di riferimento</label>
+                <select id="year" onchange="convert()">
+                    <option value="2001">2001 (Vigilia dell'ingresso dell'Euro)</option>
+                    <option value="1995">1995</option>
+                    <option value="1990">1990 (Il boom economico di fine secolo)</option>
+                    <option value="1985">1985</option>
+                    <option value="1980">1980 (Gli anni dell'alta inflazione)</option>
+                    <option value="1970">1970</option>
+                    <option value="1960">1960 (Il miracolo economico italiano)</option>
+                </select>
+            </div>
+
+            <div class="result-box" id="resultBox">
+                <div class="result-title">Potere d'acquisto equivalente:</div>
+                <div class="result-value" id="resultValue">-</div>
+                <div class="info-text" id="infoText" style="color:#475569; font-size: 14px;"></div>
+            </div>
+        </div>
+
+        <article class="article-content">
+            <h2>Guida Completa al Valore Storico della Lira</h2>
+            <p>Il 1° gennaio 2002 l'Italia ha assistito al più grande cambiamento monetario della sua storia recente: l'introduzione fisica dell'Euro e il progressivo addio alla Lira. Il tasso di conversione irrevocabile fu fissato a <strong>1 Euro = 1.936,27 Lire</strong>. Tuttavia, usare esclusivamente questo numero fisso per fare paragoni con decenni molto lontani porta a distorsioni economiche enormi. Ecco perché nasce questo calcolatore.</p>
+
+            <h3>Perché il tasso di cambio fisso non basta?</h3>
+            <p>Quando qualcuno afferma che "nel 1980 uno stipendio medio era di 500.000 lire, che oggi sarebbero appena 250 euro", sta commettendo un errore basilare di educazione finanziaria. Ignora completamente <strong>l'inflazione</strong>, ovvero la diminuzione del potere d'acquisto della moneta nel tempo.</p>
+            <p>Se dividiamo semplicemente 500.000 per 1936,27 otteniamo una cifra matematicamente corretta, ma economicamente falsa. Nel 1980, con 500.000 lire, si potevano acquistare beni e servizi per i quali oggi non basterebbero 250 euro. È necessario applicare un coefficiente di rivalutazione ISTAT per scoprire il vero "peso" di quel denaro.</p>
+
+            <h3>Come funziona questo simulatore?</h3>
+            <p>Il nostro strumento incrocia due dati fondamentali per offrirti un risultato realistico:</p>
+            <ul>
+                <li>Il tasso di cambio ufficiale stabilito dalla Banca Centrale Europea (1936,27).</li>
+                <li>I coefficienti storici di svalutazione calcolati sull'indice dei prezzi al consumo (paniere ISTAT).</li>
+            </ul>
+            <p>Ad esempio, l'inflazione in Italia ha raggiunto picchi del 21% annuo negli anni '70. Questo significa che i prezzi raddoppiavano in pochi anni. Il calcolatore neutralizza questa distorsione. Se inserisci 1 milione di lire del 1970, lo strumento ti dirà esattamente a quanti Euro odierni corrispondono in termini di reale capacità di spesa, mostrandoti una cifra molto più alta del semplice rapporto di divisione fisso.</p>
+
+            <h3>Esempi pratici di utilizzo</h3>
+            <p>Questo strumento è particolarmente utile in diverse situazioni della vita quotidiana e professionale:</p>
+            <ul>
+                <li><strong>Valutazioni immobiliari storiche:</strong> Capire quanto pagò realmente tuo nonno una casa negli anni '60 paragonandolo al mercato immobiliare attuale.</li>
+                <li><strong>Storia dell'automobile:</strong> Scoprire quanto "pesava" sul bilancio familiare l'acquisto di una Fiat 500 nel 1970 rispetto all'acquisto di un'utilitaria oggi.</li>
+                <li><strong>Revisione degli stipendi:</strong> Paragonare il reddito di un operaio o di un impiegato del 1985 con i minimi salariali moderni.</li>
+            </ul>
+            <p><em>Nota legale:</em> I calcoli forniti da questo strumento si basano su medie statistiche storiche e hanno uno scopo puramente educativo, accademico e divulgativo. Non devono essere utilizzati per rivalutazioni legali di crediti, assegni di mantenimento o controversie tributarie, per le quali è necessario rivolgersi a un commercialista iscritto all'albo.</p>
+        </article>
+
+    </div>
+
+    <footer>
+        <div style="margin-bottom: 15px;">
+            <a href="chi-siamo.html">Chi Siamo</a> | 
+            <a href="contatti.html">Contatti</a> | 
+            <a href="privacy.html">Privacy Policy</a>
+        </div>
+        <div>&copy; 2026 Vincenzo Lab - Tutti i diritti riservati.</div>
+    </footer>
+
+    <script>
+        const inflationCoefficients = {
+            "2001": 1.02,
+            "1995": 1.28,
+            "1990": 1.62,
+            "1985": 2.24,
+            "1980": 3.95,
+            "1970": 11.20,
+            "1960": 21.80
+        };
+
+        const CHANGE_RATE = 1936.27;
+
+        function convert() {
+            const direction = document.getElementById('direction').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const year = document.getElementById('year').value;
+            
+            const resultBox = document.getElementById('resultBox');
+            const resultValue = document.getElementById('resultValue');
+            const infoText = document.getElementById('infoText');
+
+            if (isNaN(amount) || amount <= 0) {
+                resultBox.style.display = 'none';
+                return;
+            }
+
+            resultBox.style.display = 'block';
+            const coef = inflationCoefficients[year];
+
+            if (direction === "eurToLit") {
+                const lireFisse = amount * CHANGE_RATE;
+                const lireStoriche = lireFisse / coef;
+
+                resultValue.innerText = Math.round(lireStoriche).toLocaleString('it-IT') + " Lire";
+                infoText.innerHTML = `<strong>Dettaglio matematico:</strong> ${amount.toLocaleString('it-IT')} € di oggi garantiscono un potere d'acquisto equivalente a ${Math.round(lireStoriche).toLocaleString('it-IT')} Lire spese nel ${year}. Se usassimo solo il cambio fisso senza considerare l'inflazione, il risultato errato sarebbe ${Math.round(lireFisse).toLocaleString('it-IT')} Lire.`;
+            
+            } else {
+                const euroFissi = amount / CHANGE_RATE;
+                const euroOggi = euroFissi * coef;
+
+                resultValue.innerText = euroOggi.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+                infoText.innerHTML = `<strong>Dettaglio matematico:</strong> Per acquistare oggi le stesse cose che compravi con ${amount.toLocaleString('it-IT')} Lire nel ${year}, ti servirebbero ${euroOggi.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €. Il mero cambio fisso nominale varrebbe invece soli ${euroFissi.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €.`;
+            }
+        }
+    </script>
+
+</body>
+</html>
